@@ -3,47 +3,64 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using TMPro;
+using FPSControllerLPFP;
+// using FPSControllerLPFP;
 
 public class ManageScenes : MonoBehaviour
 {
-    [SerializeField] GameObject _pausePanel         = null;
-    [SerializeField] TextMeshProUGUI _escText       = null;
+    [SerializeField] GameObject _pausePanel                             = null;
+    [SerializeField] TextMeshProUGUI _escText                           = null;
 
     private CheckForWin _checkForWin;
-    private FirstPersonController _fpsController    = null;
+    private FirstPersonController _fpsController                        = null;
+    private FPSControllerLPFP.FpsControllerLPFP _fpsControllerLPFP      = null;
 
-    private bool _isPaused                          = false;
+    public bool isPaused                                                = false;
     private int _currentScene;
 
     private void Start() {
         _currentScene = SceneManager.GetActiveScene().buildIndex;
         _fpsController = FindObjectOfType<FirstPersonController>();
+        _fpsControllerLPFP = FindObjectOfType<FpsControllerLPFP>();
         _checkForWin = FindObjectOfType<CheckForWin>();
 
-        if (_currentScene != 0) { Cursor.visible = false; }
+        if (_currentScene != 0) 
+        {
+            // Cursor.visible = false;
+            // Cursor.lockState = CursorLockMode.Locked; 
+            SetCursor();
+        }
         if (_pausePanel) { _pausePanel.SetActive(false); }
     }
 
     private void Update() {
         if (!_checkForWin) { return; }
         if (!_checkForWin.ReturnDidWin()) { PauseResumeGame(); }
-        // SetCursor();
     }
 
     private void PauseResumeGame()
     {
         if (Input.GetKeyDown(KeyCode.Escape))
         {
-            if(_isPaused == false) { PauseGame(); }
-            // else {  ResumeGame();  }
+            if(isPaused == false) { PauseGame(); }
+            else {  ResumeGame();  }
+            SetCursor();
         }
     }
 
     public void PauseGame()
     {
-        _isPaused = true;
-        _fpsController.gameObject.GetComponentInChildren<FirstPersonController>().enabled = false;
-        Cursor.visible = true;
+        isPaused = true;
+
+
+        SetCursor();
+        // if ( _fpsController ) _fpsController.gameObject.GetComponentInChildren<FirstPersonController>().enabled = false;
+        // if ( _fpsControllerLPFP ) _fpsControllerLPFP.gameObject.GetComponentInChildren<FpsControllerLPFP>().enabled = false;
+        // Cursor.visible = true;
+        // Cursor.lockState = CursorLockMode.Confined;
+        // if ( _fpsControllerLPFP ) _fpsControllerLPFP.enabled = false;
+
+        
         Time.timeScale = 0;
         if ( _escText ) { _escText.enabled = false; }
         _pausePanel.SetActive(true);
@@ -51,9 +68,16 @@ public class ManageScenes : MonoBehaviour
 
     public void ResumeGame()
     {
-        _isPaused = false;
-        _fpsController.gameObject.GetComponentInChildren<FirstPersonController>().enabled = true;
-        Cursor.visible = false;
+        isPaused = false;
+
+
+        SetCursor();
+        // if (_fpsController) _fpsController.gameObject.GetComponentInChildren<FirstPersonController>().enabled = true;
+        // if (_fpsControllerLPFP) _fpsControllerLPFP.gameObject.GetComponentInChildren<FpsControllerLPFP>().enabled = true;
+        // if (_fpsControllerLPFP) _fpsControllerLPFP.enabled = true;
+        // Cursor.visible = false;
+
+
         Time.timeScale = 1;
         if (_escText) { _escText.enabled = true; }
         _pausePanel.SetActive(false);
@@ -80,8 +104,26 @@ public class ManageScenes : MonoBehaviour
 
     public void QuitGame() { Application.Quit(); }
 
-    public bool ReturnIsPaused() => _isPaused;
+    public bool ReturnIsPaused() => isPaused;
 
-    // private void SetCursor() { Cursor.visible = _isPaused; }
+    public void SetCursor() 
+    { 
+        if (isPaused)
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
+            // if (_fpsControllerLPFP) _fpsControllerLPFP.enabled = false;
+            if (_fpsControllerLPFP) _fpsControllerLPFP.gameObject.GetComponentInChildren<FpsControllerLPFP>().enabled = false;
+
+        }
+        else
+        {
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
+            // if (_fpsControllerLPFP) _fpsControllerLPFP.enabled = true;
+            if (_fpsControllerLPFP) _fpsControllerLPFP.gameObject.GetComponentInChildren<FpsControllerLPFP>().enabled = true;
+
+        }
+    }
 
 }
