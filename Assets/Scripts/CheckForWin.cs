@@ -12,6 +12,7 @@ public class CheckForWin : MonoBehaviour
     private EndLevel _endLevel                      = null;
     private ScoreCount _scoreCount                  = null;
     private Timer _timer                            = null;
+    private ManageScenes _manageScenes              = null;
 
     private TextMeshProUGUI _timeText               = null;
     private TextMeshProUGUI _scoresCountText        = null;
@@ -23,6 +24,7 @@ public class CheckForWin : MonoBehaviour
         _endLevel = FindObjectOfType<EndLevel>();
         _scoreCount = FindObjectOfType<ScoreCount>();
         _timer = FindObjectOfType<Timer>();
+        _manageScenes = FindObjectOfType<ManageScenes>();
 
         if (_resultPanel) 
         { 
@@ -44,7 +46,10 @@ public class CheckForWin : MonoBehaviour
     {
         if (_didWin)
         {
-            Cursor.visible = true;
+            // Cursor.visible = true;
+            _manageScenes.isPaused = true;
+            _manageScenes.SetCursor();
+            
             Time.timeScale = 0;
             _resultPanel.SetActive(true);
             _scoresCountText.text = _scoreCount.ReturnTotalScore();
